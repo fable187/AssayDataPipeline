@@ -211,3 +211,53 @@ test('A8: refusal and cut-off answers are not accepted', () => {
   const good = L.parseExtractionResponse({ stop_reason: 'end_turn', content: [{ type: 'text', text: '{"a":1}' }] });
   assert.deepEqual(good.data, { a: 1 });
 });
+
+// ---------- Phone line (Twilio) ----------
+
+test('phone: the default greeting passes consent; its own opt-out line does not block', () => {
+  const greeting = L.fillTemplate(cfg.phone_greeting, { firm_name: cfg.firm_name });
+  const r = L.checkConsent([
+    u('A', 0, greeting),
+    u('B', 25, 'Hi, this is Dana. My mom needs a will before her surgery.'),
+  ], cfg);
+  assert.equal(r.ok, true);
+  assert.equal(r.firmSpeaker, 'A');
+});
+
+test('phone: caller objects on the phone line -> blocked, caller declined', () => {
+  const greeting = L.fillTemplate(cfg.phone_greeting, { firm_name: cfg.firm_name });
+  const r = L.checkConsent([u('A', 0, greeting), u('B', 25, "I don't want to be recorded.")], cfg);
+  assert.equal(r.reason, 'Blocked: caller declined');
+});
+
+test('phone: TwiML starts recording BEFORE the greeting, and escapes the callback URL', () => {
+  const xml = L.phoneLineTwiml('https://example.com/exec?key=a&b=c', cfg);
+  assert.ok(xml.indexOf('<Recording') < xml.indexOf('<Say'), 'recording must start first');
+  assert.match(xml, /key=a&amp;b=c/);
+  assert.match(xml, /This call is being recorded/);
+  assert.match(xml, /Demo Estate Law/);
+});
+
+test('phone: caller ID fills the phone only when the caller gave none', () => {
+  assert.equal(L.phoneForTicket('813-555-0123', '+19415550142'), '813-555-0123');
+  assert.equal(L.phoneForTicket('', '+19415550142'), '941-555-0142 (caller ID)');
+  assert.equal(L.phoneForTicket('', ''), '');
+  assert.equal(L.formatUsPhone('+442071234567'), '+442071234567');
+});
+
+test('phone: recording descriptions that are missing or broken read as no info', () => {
+  assert.deepEqual(L.parseSourceInfo(''), {});
+  assert.deepEqual(L.parseSourceInfo('not json'), {});
+  assert.equal(L.parseSourceInfo('{"source":"twilio","from":"+19415550142"}').from, '+19415550142');
+});
+
+test('phone: only real-looking Twilio ids are accepted from the callback', () => {
+  assert.equal(L.isTwilioSid('RE' + 'a'.repeat(32), 'RE'), true);
+  assert.equal(L.isTwilioSid('RE123/../../evil', 'RE'), false);
+  assert.equal(L.isTwilioSid('CA' + 'a'.repeat(32), 'RE'), false);
+});
+
+test('A7 proposed: keep_caller_id_on_blocked reads yes/no from Config', () => {
+  assert.equal(cfg.keep_caller_id_on_blocked, true);
+  assert.equal(L.parseConfig([['keep_caller_id_on_blocked', 'no', '']]).keep_caller_id_on_blocked, false);
+});

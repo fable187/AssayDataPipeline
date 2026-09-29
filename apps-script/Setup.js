@@ -20,6 +20,7 @@ function onOpen() {
     .addItem('Send stall reminders now', 'sendStallReminders')
     .addSeparator()
     .addItem('Open the Inbox folder', 'showInboxLink')
+    .addItem('Phone line setup', 'showPhoneLineSetup')
     .addItem('Set up (run once)', 'setup')
     .addItem('Set API keys', 'setApiKeys')
     .addItem('Reset demo data', 'resetDemo')
@@ -70,7 +71,9 @@ function setApiKeys() {
   var ui = SpreadsheetApp.getUi();
   var props = PropertiesService.getScriptProperties();
   [['ANTHROPIC_API_KEY', 'Anthropic API key (starts sk-ant-)'],
-    ['ASSEMBLYAI_API_KEY', 'AssemblyAI API key']].forEach(function (k) {
+    ['ASSEMBLYAI_API_KEY', 'AssemblyAI API key'],
+    ['TWILIO_ACCOUNT_SID', 'Twilio Account SID (starts AC). Phone line only; blank to skip'],
+    ['TWILIO_AUTH_TOKEN', 'Twilio Auth Token. Phone line only; blank to skip']].forEach(function (k) {
     var has = props.getProperty(k[0]) ? ' A key is already saved; leave blank to keep it.' : '';
     var res = ui.prompt(k[1], 'Paste the key.' + has, ui.ButtonSet.OK_CANCEL);
     var value = res.getResponseText().trim();

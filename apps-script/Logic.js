@@ -88,6 +88,15 @@ var CONFIG_SPEC = [
       '{firm_name}'
     ].join('\n'),
     meaning: 'A5. Decline draft body (Not our practice).' },
+  { key: 'phone_greeting', type: 'text',
+    value: 'Thank you for calling {firm_name}. This call is being recorded. If you would rather ' +
+      'not be recorded, just say so, or hang up and email us instead. After this message, please ' +
+      'tell us your name, the best phone number or email to reach you, and how we can help. ' +
+      'Hang up when you are finished.',
+    meaning: 'Phone line: what callers hear first. Must contain a notice phrase (A7).' },
+  { key: 'keep_caller_id_on_blocked', type: 'yesno', value: 'yes',
+    meaning: 'PROPOSED A7 change: keep the phone system\'s caller ID on Blocked tickets so staff ' +
+      'can call back. "no" = keep only time, file and reason.' },
   { key: 'chat_webhook_url', type: 'text', value: '',
     meaning: 'Optional Google Chat webhook for alerts (Workspace only). Blank = email only.' },
   { key: 'claude_model', type: 'text', value: 'claude-opus-5',
@@ -108,6 +117,8 @@ function parseConfig(rows) {
         .filter(function (s) { return s; });
     } else if (spec.type === 'number') {
       cfg[spec.key] = Number(raw);
+    } else if (spec.type === 'yesno') {
+      cfg[spec.key] = /^(yes|y|true)$/i.test(String(raw).trim());
     } else {
       cfg[spec.key] = String(raw);
     }
@@ -271,6 +282,61 @@ function isReminderDue(ticket, now, cfg) {
   return true;
 }
 
+// ---------- Phone line (Twilio) ----------
+
+/** What the phone line saves in the recording's Drive description. Anything unreadable -> {}. */
+function parseSourceInfo(description) {
+  try {
+    var info = JSON.parse(description || '{}');
+    return info && typeof info === 'object' ? info : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+/** "+19415550142" -> "941-555-0142". Anything else is returned as it came. */
+function formatUsPhone(number) {
+  var m = /^\+1(\d{3})(\d{3})(\d{4})$/.exec(String(number || ''));
+  return m ? m[1] + '-' + m[2] + '-' + m[3] : String(number || '');
+}
+
+/** The number the caller gave wins; the phone system's caller ID fills the gap. */
+function phoneForTicket(aiPhone, callerId) {
+  if (aiPhone) return aiPhone;
+  return callerId ? formatUsPhone(callerId) + ' (caller ID)' : '';
+}
+
+function escapeXml(text) {
+  return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/**
+ * The TwiML Twilio runs when the demo number is called. Recording starts before the greeting,
+ * so the notice is in the recording and the normal consent check (A7) can verify it.
+ */
+function phoneLineTwiml(callbackUrl, cfg) {
+  var greeting = fillTemplate(cfg.phone_greeting, { firm_name: cfg.firm_name });
+  return [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<Response>',
+    '  <Start>',
+    '    <Recording channels="mono" recordingStatusCallbackEvent="completed"',
+    '      recordingStatusCallback="' + escapeXml(callbackUrl) + '"/>',
+    '  </Start>',
+    '  <Say voice="Polly.Joanna">' + escapeXml(greeting) + '</Say>',
+    '  <Pause length="120"/>',
+    '  <Say voice="Polly.Joanna">Thank you. We will be in touch soon. Goodbye.</Say>',
+    '  <Hangup/>',
+    '</Response>'
+  ].join('\n');
+}
+
+/** Twilio ids have a fixed shape; checking it stops a forged callback pointing us elsewhere. */
+function isTwilioSid(value, prefix) {
+  return new RegExp('^' + prefix + '[0-9a-f]{32}$').test(String(value || ''));
+}
+
 // ---------- A8: the Claude request ----------
 
 function extractionSchema(cfg) {
@@ -364,6 +430,8 @@ if (typeof module !== 'undefined') {
     route: route, initialStatus: initialStatus, emailPlan: emailPlan, fillTemplate: fillTemplate,
     templateValues: templateValues, isReminderDue: isReminderDue,
     extractionSchema: extractionSchema, buildExtractionRequest: buildExtractionRequest,
-    parseExtractionResponse: parseExtractionResponse
+    parseExtractionResponse: parseExtractionResponse, parseSourceInfo: parseSourceInfo,
+    formatUsPhone: formatUsPhone, phoneForTicket: phoneForTicket, phoneLineTwiml: phoneLineTwiml,
+    isTwilioSid: isTwilioSid
   };
 }

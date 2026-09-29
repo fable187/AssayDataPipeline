@@ -79,6 +79,10 @@ A person has to confirm any Urgent or High ticket. Claude can suggest an urgency
 > Owner to decide: delete blocked audio, or move it to a locked folder? Keeping an unconsented
 > recording is the legal risk, so PROPOSED is delete.
 
+- **Phone line only. PROPOSED addition:** the phone system knows the caller's number whether or
+  not the call was recorded. A Blocked ticket keeps that **caller ID**, so staff can call back,
+  but nothing from the recording itself. Config setting `keep_caller_id_on_blocked` (yes/no).
+
 ### A8. What gets pulled from each call. PROPOSED
 
 Caller name, callback phone, email, caller's relationship to the person the matter is about, that
@@ -155,6 +159,21 @@ again: **nothing**.
 ### S9. Rule overrides Claude
 **Setup:** Covered by S2 and S3. Check the Log sheet: if Claude rated either one lower than Urgent, the
 final urgency is still Urgent, and the reason names the rule.
+
+### S10. Live call to the demo phone line
+**Call:** Dial the demo number from your verified phone. After the greeting, say your name, that
+your mother has surgery next week and wants a will first, and give an email address. Hang up.
+**Expected:** Within about a minute a ticket appears with Audio file `Phone call <date time>.mp3` ·
+Consent **Passed** (the greeting's notice is in the transcript) · Urgency **Urgent** (rule:
+"surgery") · Owner **Attorney** · the Phone column holds the number you said, or your caller ID
+marked `(caller ID)` if you didn't say one · the recording is gone from Twilio (Monitor > Call
+recordings) and sits in Drive **Processed**.
+
+### S11. Live call, caller declines
+**Call:** Dial the number and say "I don't want to be recorded", then keep talking.
+**Expected:** Blocked, caller declined · AI never called · audio deleted from Drive and Twilio ·
+Phone column shows your number as `(caller ID)` (per the PROPOSED A7 addition) · the paralegal's
+"Call back" email includes the caller ID.
 
 ---
 

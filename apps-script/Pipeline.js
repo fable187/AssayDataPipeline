@@ -69,14 +69,19 @@ function handleTranscript_(t, tr, cfg) {
   });
   var consent = checkConsent(utterances, cfg);
   var now = new Date();
+  // Recordings from the phone line carry the caller ID; dragged-in files carry nothing.
+  var callerId = parseSourceInfo(DriveApp.getFileById(t['File ID']).getDescription()).from || '';
 
   if (!consent.ok) {
-    // A7: no AI, nothing kept. Only the time, file name and reason stay on the ticket.
+    // A7: no AI, nothing from the call kept. The caller ID comes from the phone system, not the
+    // recording, and is kept only if keep_caller_id_on_blocked says so (PROPOSED).
+    var keepId = cfg.keep_caller_id_on_blocked && callerId;
     assemblyDelete_(t['Transcript ID']);
     Drive.Files.remove(t['File ID']);
     var blocked = route('Normal', true, cfg);
     writeTicket_(t._row, {
       Status: 'Blocked', Consent: consent.reason, Owner: blocked.owner, 'Email draft': 'None',
+      Phone: keepId ? formatUsPhone(callerId) + ' (caller ID)' : '',
       'Next action': 'Call the person back. Do not record the call.', 'Last activity': now,
       'Transcript ID': ''
     });
@@ -85,8 +90,10 @@ function handleTranscript_(t, tr, cfg) {
     sendAlert_(blocked, t.Ticket + ' call was not processed (' + consent.reason + ')', [
       'A call received ' + formatDate_(t.Received) + ' was not processed: ' + consent.reason + '.',
       'The recording and transcript have been deleted.',
-      'The caller\'s number is not known from this system. Check the phone log and call back ' +
-        'without recording.'
+      keepId
+        ? 'Caller ID: ' + formatUsPhone(callerId) + '. Call back without recording.'
+        : 'The caller\'s number is not known from this system. Check the phone log and call back ' +
+          'without recording.'
     ], cfg);
     return;
   }
@@ -103,6 +110,7 @@ function handleTranscript_(t, tr, cfg) {
     var fallback = route('Normal', false, cfg);
     writeTicket_(t._row, {
       Status: 'Needs review', Consent: consentNote, Owner: fallback.owner, 'Email draft': 'None',
+      Phone: phoneForTicket('', callerId),
       'Next action': ai.reason + '. Read the transcript.', 'Last activity': now, 'Transcript ID': ''
     });
     sendAlert_(fallback, t.Ticket + ' needs a person to read it', [ai.reason + '.'], cfg);
@@ -120,7 +128,8 @@ function handleTranscript_(t, tr, cfg) {
 
   writeTicket_(t._row, {
     Status: status, Urgency: decision.urgency, 'Urgency reason': decision.reason, Owner: r.owner,
-    'Matter type': x.matter_type, Caller: x.caller_name, Phone: x.phone, Email: x.email,
+    'Matter type': x.matter_type, Caller: x.caller_name, Phone: phoneForTicket(x.phone, callerId),
+    Email: x.email,
     About: x.about_person, Relationship: x.relationship, 'What they want': x.what_they_want,
     Summary: x.summary, 'Next action': x.next_action, 'Key facts': bullets_(x.key_facts),
     Dates: bullets_(x.dates), Documents: bullets_(x.documents), 'Heard from': x.heard_from,
@@ -131,7 +140,8 @@ function handleTranscript_(t, tr, cfg) {
 
   sendAlert_(r, t.Ticket + ' ' + x.matter_type + ' - ' + (x.caller_name || 'unknown caller'), [
     'Urgency: ' + decision.urgency + ' (' + decision.reason + ')',
-    'Caller: ' + (x.caller_name || '-') + '   Phone: ' + (x.phone || '-') + '   Email: ' + (x.email || '-'),
+    'Caller: ' + (x.caller_name || '-') + '   Phone: ' + (phoneForTicket(x.phone, callerId) || '-') +
+      '   Email: ' + (x.email || '-'),
     'Wants: ' + (x.what_they_want || '-'),
     '',
     x.summary,
