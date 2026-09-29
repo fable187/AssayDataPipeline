@@ -1,0 +1,7 @@
+# S4. No recording notice. Expected: Blocked, no notice. The AI never sees it; audio deleted.
+voices: firm=Zira caller=David
+F: Demo Estate Law, how can I help you?
+C: Hi, my name is Daniel Price. My aunt passed away and left me as the trustee of her trust, and I need help figuring out what to do.
+F: Sure. Can I get your phone number?
+C: It's 727 555 0199.
+F: Thanks, Daniel. Someone will call you back.

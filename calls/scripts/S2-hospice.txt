@@ -1,0 +1,11 @@
+# S2. Parent in hospice. Expected: Incapacity documents, Urgent by rule "hospice", Attorney.
+voices: firm=David caller=Zira
+F: Demo Estate Law, this is James. This call is being recorded for our records. How can I help?
+C: Hi. My name is Angela Torres. My mother is in hospice right now. She's still lucid, and she wants me to have her power of attorney and be her health care surrogate.
+F: I'm so sorry to hear that. Where is she staying?
+C: She's at a hospice facility in Bradenton. Is there any way someone could come to the facility this week?
+F: We'll do our best. What's your mother's name?
+C: Carmen Torres.
+F: And the best way to reach you?
+C: My cell is 941 555 0187, and my email is angela dot torres at example dot com.
+F: Thank you, Angela. I'm going to flag this for our attorney right away.

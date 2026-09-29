@@ -1,0 +1,7 @@
+# S7. Not our practice. Expected: Not our practice, decline draft with the Lawyer Referral Service.
+voices: firm=David caller=Zira
+F: Demo Estate Law, this call is being recorded. How can I help you?
+C: Hi, I'm Jessica Lane. I need help with a divorce, and there's a custody issue with my kids.
+F: I see. Can I get your contact information?
+C: Sure. It's jessica dot lane at example dot com, and my number is 352 555 0171.
+F: Thank you, Jessica. Someone will be in touch.

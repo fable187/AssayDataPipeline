@@ -1,0 +1,11 @@
+# S3. Probate with a hearing date. Expected: Probate, Urgent by rule "hearing", keeps "executor".
+voices: firm=Zira caller=David
+F: Thank you for calling Demo Estate Law. This call is being recorded. How can I help?
+C: Hi. My father passed away last month, and I honestly don't know where to start. My name is Michael Brandt.
+F: I'm very sorry for your loss. Did your father have a will?
+C: He did. It names my sister, Karen, as the executor.
+F: Has anything been filed with the court yet?
+C: Not that I know of. But Karen got a letter about a court hearing on October fifteenth, and we don't know what it's about.
+F: Okay. We'll want to see that letter. What's the best way to reach you?
+C: 813 555 0123, or michael dot brandt at example dot com.
+F: Thanks, Michael. We'll get back to you quickly.

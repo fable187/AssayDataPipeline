@@ -1,0 +1,15 @@
+# S1. New estate plan, routine. Expected: Plan update, Normal, Paralegal, welcome draft.
+voices: firm=Zira caller=David
+F: Thank you for calling Demo Estate Law, this is Maria. Just so you know, this call is being recorded. If you'd rather not be recorded, just let me know.
+C: Sure, that's fine.
+F: Great. How can I help you today?
+C: My wife and I moved down to Sarasota from Ohio last year. We have wills from Ohio, but our financial advisor said we should get everything looked at now that we live in Florida.
+F: That's a good idea. Can I get your name?
+C: Robert Hale. My wife is Susan.
+F: And do you have children?
+C: Two, both adults. And we own our house here in Sarasota.
+F: What are you hoping to have done?
+C: Honestly, whatever we need to be covered in Florida.
+F: Understood. What's the best number and email to reach you?
+C: My phone is 941 555 0142. Email is robert dot hale at example dot com.
+F: Thank you, Robert. Someone will follow up with you shortly.

@@ -1,0 +1,11 @@
+# S3b. Probate, no deadline. Expected: Probate, Normal, Paralegal. The staff question mentions "court"; only the caller's words count.
+voices: firm=Zira caller=David
+F: Thank you for calling Demo Estate Law. This call is being recorded. How can I help?
+C: Hi. My father passed away about three months ago, and we haven't dealt with any of it yet. My name is Michael Brandt.
+F: I'm very sorry for your loss. Did your father have a will?
+C: He did. It names my sister, Karen, as the executor.
+F: Has there been any court date or deadline so far?
+C: No, nothing like that. Nothing has been filed.
+F: Okay. What's the best way to reach you?
+C: 813 555 0123, or michael dot brandt at example dot com.
+F: Thanks, Michael. We'll be in touch.

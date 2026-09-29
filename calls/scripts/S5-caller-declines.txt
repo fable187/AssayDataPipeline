@@ -1,0 +1,7 @@
+# S5. Caller objects to recording. Expected: Blocked, caller declined. Nothing after the objection is kept.
+voices: firm=David caller=Zira
+F: Demo Estate Law, this is James. This call is being recorded. How can I help?
+C: Actually, I'd rather this not be recorded.
+F: Understood. What can I help you with?
+C: My husband and I want to set up a trust for our grandchildren. I'm Patricia Owens, and my number is 239 555 0164.
+F: Thank you, Patricia. We'll call you back.

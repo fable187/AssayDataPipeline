@@ -1,0 +1,7 @@
+# S6. Existing client, status check. Expected: Existing matter, Normal, no email draft.
+voices: firm=Zira caller=David
+F: Thank you for calling Demo Estate Law. This call is being recorded. How can I help?
+C: Hi, this is Thomas Reed. You're already handling our trust. I'm calling to check whether the deed transfer for our house is done yet.
+F: Let me take a note and have your paralegal get back to you. What's the best number?
+C: 941 555 0110.
+F: Thanks, Thomas. We'll call you back.

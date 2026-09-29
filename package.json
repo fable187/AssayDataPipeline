@@ -1,0 +1,14 @@
+{
+  "name": "intake-demo",
+  "private": true,
+  "description": "Law firm call intake demo: recorded call -> transcript -> AI intake record -> triaged ticket in Google Sheets",
+  "scripts": {
+    "test": "node --test",
+    "calls": "powershell -NoProfile -ExecutionPolicy Bypass -File calls/make-calls.ps1",
+    "smoke": "node tools/smoke.js",
+    "push": "clasp push"
+  },
+  "devDependencies": {
+    "@google/clasp": "^3.0.0"
+  }
+}
